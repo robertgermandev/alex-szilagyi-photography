@@ -1,1 +1,1 @@
-# photography starter
+# Alex Szilagyi Photography
