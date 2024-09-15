@@ -22,7 +22,7 @@ const Socials = () => {
         </li>
         <li>
           <a
-            href="https://www.facebook.com/alexszilagyiphotography"
+            href="https://www.facebook.com/alex.szilagyi.3"
             target="_blank"
           >
             <ImFacebook />

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Socials from "./Socials";
-import Logo from "../img/header/logo.svg";
+import Logo from "../img/header/logo.png";
 import MobileNav from "./MobileNav";
 import { Link } from "react-router-dom";
 import { CursorContext } from "../context/CursorContext";
