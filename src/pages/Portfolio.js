@@ -9,10 +9,12 @@ import { db } from "../firebase/firebase";
 const Portfolio = () => {
   const { mouseEnterHandler, mouseLeaveHandler } = useContext(CursorContext);
   const [weddings, setWeddings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchWeddings = async () => {
       try {
+        setLoading(true);
         const weddingsCollection = collection(db, "weddings");
         const snapshot = await getDocs(weddingsCollection);
         const weddingList = [];
@@ -36,6 +38,8 @@ const Portfolio = () => {
         setWeddings(weddingList);
       } catch (error) {
         console.error("Error fetching wedding data: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -48,7 +52,7 @@ const Portfolio = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: "100%" }}
       transition={transition1}
-      className="section min-h-screen overflow-y-auto" 
+      className="section min-h-screen overflow-y-auto"
     >
       <div className="container mx-auto relative">
         <div className="flex flex-col items-center justify-center gap-y-8 text-center pt-24 lg:pt-36 pb-8">
@@ -68,7 +72,9 @@ const Portfolio = () => {
             </p>
 
             <div className="w-full">
-              {weddings.length > 0 ? (
+              {loading ? (
+                <p>Loading weddings...</p>
+              ) : weddings.length > 0 ? (
                 weddings.map((wedding) => (
                   <div key={wedding.name} className="mb-12 w-full">
                     <h1 className="h1 text-2xl font-bold mb-4 text-center">
@@ -78,7 +84,10 @@ const Portfolio = () => {
                     </h1>
                     <div className="w-full flex justify-between gap-2">
                       {wedding.images.map((imageUrl, index) => (
-                        <div key={index} className="w-full h-64 overflow-hidden">
+                        <div
+                          key={index}
+                          className="w-full h-64 overflow-hidden"
+                        >
                           <img
                             src={imageUrl}
                             alt={`${wedding.name} ${index + 1}`}
