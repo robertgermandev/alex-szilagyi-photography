@@ -1,15 +1,46 @@
-import React, { useContext } from "react";
-import Image1 from "../img/portfolio/1.png";
-import Image2 from "../img/portfolio/2.png";
-import Image3 from "../img/portfolio/3.png";
-import Image4 from "../img/portfolio/4.png";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { transition1 } from "../transitions";
 import { CursorContext } from "../context/CursorContext";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 const Portfolio = () => {
   const { mouseEnterHandler, mouseLeaveHandler } = useContext(CursorContext);
+  const [weddings, setWeddings] = useState([]);
+
+  useEffect(() => {
+    const fetchWeddings = async () => {
+      try {
+        const weddingsCollection = collection(db, "weddings");
+        const snapshot = await getDocs(weddingsCollection);
+        const weddingList = [];
+
+        for (const docSnap of snapshot.docs) {
+          const weddingName = docSnap.id;
+          const weddingDoc = doc(db, "weddings", weddingName);
+          const docSnapshot = await getDoc(weddingDoc);
+
+          if (docSnapshot.exists()) {
+            const weddingData = docSnapshot.data();
+            const images = weddingData.images || [];
+            const displayName = weddingData.name || weddingName;
+            weddingList.push({
+              name: displayName,
+              images: images.slice(0, 3),
+            });
+          }
+        }
+
+        setWeddings(weddingList);
+      } catch (error) {
+        console.error("Error fetching wedding data: ", error);
+      }
+    };
+
+    fetchWeddings();
+  }, []);
 
   return (
     <motion.section
@@ -20,7 +51,7 @@ const Portfolio = () => {
       className="section"
     >
       <div className="container mx-auto h-full relative">
-        <div className="flex flex-col lg:flex-row h-full items-center justify-start gap-x-24 text-center lg:text-left pt-24 lg:pt-36 pb-8">
+        <div className="flex flex-col items-center justify-center gap-y-8 text-center pt-24 lg:pt-36 pb-8">
           <motion.div
             initial={{ opacity: 0, y: "-80%" }}
             animate={{ opacity: 1, y: 0 }}
@@ -28,55 +59,46 @@ const Portfolio = () => {
             transition={transition1}
             onMouseEnter={mouseEnterHandler}
             onMouseLeave={mouseLeaveHandler}
-            className="flex flex-col lg:items-start"
+            className="w-full"
           >
-            <h1 className="h1">Portfolio</h1>
-            <p className="mb-12 max-w-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Architecto a odio obcaecati asperiores aliquam quo! Quos
-              dignissimos repellat, architecto tempora eligendi rerum officiis,
-              veniam voluptates, aliquid commodi earum omnis doloribus!
-              <br />
-              <br />
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe
-              consequuntur aliquam exercitationem accusamus aliquid sit tenetur
-              repellendus in ea cumque perspiciatis aut quasi odio delectus qui
-              officia veniam, repudiandae dolore!
+            <h1 className="h1 mb-8">Portfolio</h1>
+            <p className="mb-12 max-w-lg mx-auto text-center">
+              Browse through our wedding galleries. Click on a wedding name to
+              view more photos.
             </p>
-            <Link to={"/contact"} className="btn mb-[30px] mx-auto lg:mx-0">
-              Hire me
-            </Link>
+
+            <div className="w-full">
+              {weddings.length > 0 ? (
+                weddings.map((wedding) => (
+                  <div key={wedding.name} className="mb-12 w-full">
+                    <h1 className="h1 text-2xl font-bold mb-4 text-center">
+                      <Link
+                        to={`/wedding/${wedding.name}`}
+                      >
+                        {wedding.name}
+                      </Link>
+                    </h1>
+                    <div className="w-full flex justify-between gap-2">
+                      {wedding.images.map((imageUrl, index) => (
+                        <div
+                          key={index}
+                          className="w-full h-64 overflow-hidden"
+                        >
+                          <img
+                            src={imageUrl}
+                            alt={`${wedding.name} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>No weddings available.</p>
+              )}
+            </div>
           </motion.div>
-          <div className="grid grid-cols-2 lg:gap-2">
-            <div className="max-w-[250px] lg:max-w-[320px] h-[187px] lg:h-[220px] bg-accent overflow-hidden">
-              <img
-                className="object-cover h-full lg:h-[220px] hover:scale-110 transition-all duration-500"
-                src={Image1}
-                alt=""
-              />
-            </div>
-            <div className="max-w-[250px] lg:max-w-[320px] h-[187px] lg:h-[220px] bg-accent overflow-hidden">
-              <img
-                className="object-cover h-full lg:h-[220px] hover:scale-110 transition-all duration-500"
-                src={Image2}
-                alt=""
-              />
-            </div>
-            <div className="max-w-[250px] lg:max-w-[320px] h-[187px] lg:h-[220px] bg-accent overflow-hidden">
-              <img
-                className="object-cover h-full lg:h-[220px] hover:scale-110 transition-all duration-500"
-                src={Image3}
-                alt=""
-              />
-            </div>
-            <div className="max-w-[250px] lg:max-w-[320px] h-[187px] lg:h-[220px] bg-accent overflow-hidden">
-              <img
-                className="object-cover h-full lg:h-[220px] hover:scale-110 transition-all duration-500"
-                src={Image4}
-                alt=""
-              />
-            </div>
-          </div>
         </div>
       </div>
     </motion.section>
