@@ -25,9 +25,9 @@ const Contact = () => {
   const sendEmail = (e) => {
     e.preventDefault();
 
-    const serviceID = "YOUR_SERVICE_ID";
-    const templateID = "YOUR_TEMPLATE_ID";
-    const userID = "YOUR_USER_ID";
+    const serviceID = "service_vi0vsdk";
+    const templateID = "template_0x2656t";
+    const userID = "-nYN8Z0AiB8WRm5eP";
 
     emailjs.send(serviceID, templateID, formData, userID).then(
       (response) => {
