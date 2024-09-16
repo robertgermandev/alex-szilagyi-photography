@@ -4,6 +4,8 @@ import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import "react-image-lightbox/style.css";
 import Lightbox from "react-image-lightbox";
+import { motion } from "framer-motion";
+import { transition1 } from "../transitions";
 
 const WeddingDetails = () => {
   const { weddingName } = useParams();
@@ -69,59 +71,67 @@ const WeddingDetails = () => {
   }
 
   return (
-    <div className="container mx-auto pt-24 lg:pt-36 pb-8">
-      <h1 className="h1 text-3xl font-bold mb-8 text-center">
-        {weddingData.name}
-      </h1>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {weddingData.images && weddingData.images.length > 0 ? (
-          weddingData.images.map((imageUrl, index) => (
-            <div
-              key={index}
-              className="w-full h-64 overflow-hidden cursor-pointer"
-              onClick={() => {
-                setIsOpen(true);
-                setPhotoIndex(index);
-              }}
-            >
-              <img
-                src={imageUrl}
-                alt={`${weddingData.name} ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))
-        ) : (
-          <p className="col-span-full text-center text-xl font-semibold">
-            No images available for this wedding.
-          </p>
+    <motion.section
+      initial={{ opacity: 0, y: "100%" }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: "100%" }}
+      transition={transition1}
+      className="section min-h-screen overflow-y-auto"
+    >
+      <div className="container mx-auto pt-24 lg:pt-36 pb-8">
+        <h1 className="h1 text-3xl font-bold mb-8 text-center">
+          {weddingData.name}
+        </h1>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {weddingData.images && weddingData.images.length > 0 ? (
+            weddingData.images.map((imageUrl, index) => (
+              <div
+                key={index}
+                className="w-full h-64 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  setIsOpen(true);
+                  setPhotoIndex(index);
+                }}
+              >
+                <img
+                  src={imageUrl}
+                  alt={`${weddingData.name} ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-xl font-semibold">
+              No images available for this wedding.
+            </p>
+          )}
+        </div>
+        {isOpen && (
+          <Lightbox
+            mainSrc={weddingData.images[photoIndex]}
+            nextSrc={
+              weddingData.images[(photoIndex + 1) % weddingData.images.length]
+            }
+            prevSrc={
+              weddingData.images[
+                (photoIndex + weddingData.images.length - 1) %
+                  weddingData.images.length
+              ]
+            }
+            onCloseRequest={() => setIsOpen(false)}
+            onMovePrevRequest={() =>
+              setPhotoIndex(
+                (photoIndex + weddingData.images.length - 1) %
+                  weddingData.images.length
+              )
+            }
+            onMoveNextRequest={() =>
+              setPhotoIndex((photoIndex + 1) % weddingData.images.length)
+            }
+          />
         )}
       </div>
-      {isOpen && (
-        <Lightbox
-          mainSrc={weddingData.images[photoIndex]}
-          nextSrc={
-            weddingData.images[(photoIndex + 1) % weddingData.images.length]
-          }
-          prevSrc={
-            weddingData.images[
-              (photoIndex + weddingData.images.length - 1) %
-                weddingData.images.length
-            ]
-          }
-          onCloseRequest={() => setIsOpen(false)}
-          onMovePrevRequest={() =>
-            setPhotoIndex(
-              (photoIndex + weddingData.images.length - 1) %
-                weddingData.images.length
-            )
-          }
-          onMoveNextRequest={() =>
-            setPhotoIndex((photoIndex + 1) % weddingData.images.length)
-          }
-        />
-      )}
-    </div>
+    </motion.section>
   );
 };
 

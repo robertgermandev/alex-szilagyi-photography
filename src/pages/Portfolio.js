@@ -48,9 +48,9 @@ const Portfolio = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: "100%" }}
       transition={transition1}
-      className="section"
+      className="section min-h-screen overflow-y-auto" 
     >
-      <div className="container mx-auto h-full relative">
+      <div className="container mx-auto relative">
         <div className="flex flex-col items-center justify-center gap-y-8 text-center pt-24 lg:pt-36 pb-8">
           <motion.div
             initial={{ opacity: 0, y: "-80%" }}
@@ -72,18 +72,13 @@ const Portfolio = () => {
                 weddings.map((wedding) => (
                   <div key={wedding.name} className="mb-12 w-full">
                     <h1 className="h1 text-2xl font-bold mb-4 text-center">
-                      <Link
-                        to={`/wedding/${wedding.name}`}
-                      >
+                      <Link to={`/wedding/${wedding.name}`}>
                         {wedding.name}
                       </Link>
                     </h1>
                     <div className="w-full flex justify-between gap-2">
                       {wedding.images.map((imageUrl, index) => (
-                        <div
-                          key={index}
-                          className="w-full h-64 overflow-hidden"
-                        >
+                        <div key={index} className="w-full h-64 overflow-hidden">
                           <img
                             src={imageUrl}
                             alt={`${wedding.name} ${index + 1}`}
