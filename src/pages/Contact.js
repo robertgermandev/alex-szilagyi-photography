@@ -30,12 +30,10 @@ const Contact = () => {
     const userID = "-nYN8Z0AiB8WRm5eP";
 
     emailjs.send(serviceID, templateID, formData, userID).then(
-      (response) => {
-        console.log("Email sent successfully", response.status, response.text);
+      () => {
         alert("Message sent!");
       },
-      (err) => {
-        console.error("Failed to send email", err);
+      () => {
         alert("Failed to send message, please try again.");
       }
     );
